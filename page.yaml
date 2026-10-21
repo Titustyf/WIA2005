@@ -1,0 +1,50 @@
+# page.yaml: the words on your page, kept as data like everything else.
+# make_page.py puts each answer under its question. A few sentences each, in your own words;
+# leave a blank line between paragraphs. Refer to YOUR network and YOUR evidence.
+# Never put your name or full student ID here: the page is public.
+
+repository: https://github.com/Titustyf/WIA2005
+
+answers:
+  planes:
+    question: "Where are the data, control and management planes in your network?"
+    answer: |
+      The data plane is in the switches s1-s3 that forward packets between hosts using their MAC address tables.
+
+      There is not specific control plane, this Bridge learns MAC addresses by itself, in the data plane.
+
+      The Management plane is how i monitor and troubleshoot in Mininet such as mininet>
+
+  learning:
+    question: "How did your switches learn which port leads to each host? Use your MAC table evidence."
+    answer: |
+      The switches learned MAC addresses by reading the source the MAC address of incoming Ethernet frames. 
+      
+      They associated each source MAC address with the port where the frame arrived and stored this information in their MAC address tables. 
+      
+      My evidence in evidence/macs.txt shows the learned MAC addresses and their associated ports on s1. s1 learned the mac address of h1-h6 via pingall and before pingall it would not learn the MAC address.
+
+  kind:
+    question: "Which of the four kinds of programmability is this assignment (a network described as data, then built and documented by scripts)? Why isn't it any of the other three?"
+    answer: |
+      Automated configuration management
+      
+      Because I'm producing and applying configuration via topology.yaml and build_topo.py use that data to build and document the network.
+
+      The programmatic device interfaces is not primarily since our workflow does not mainly configure devices through these APIs
+
+
+  two_am:
+    question: "Week 1's 2 a.m. change on 40 switches: what would be different if those switches were described like your network?"
+    answer: "Instead of manually changing 40 switches one by one, I could update the network switches by just using one template and automation scripts to appply the changes.I could review the chnages with git diff, validate the configuration before deployment and test it first"
+
+  model:
+    question: "What's the difference between your network's data model and its serialisation? Use YAML and JSON as the example."
+    answer: "The data model describes the information and relationship in the network such as switches, hosts, IP address and links.Serialisation is how that information is represented in a format that a program can read or store. YAML and JSON are two different serialisation formats that can represent the same network data model. just using the different format and schemas and namespaces"
+
+  check:
+    question: "Why is it better to catch bad data in check() than with pingall? What did IPv6 notice about a duplicate address that IPv4 didn't?"
+    answer: "It is better to catch bad data first because we can identify the configuration mistakes first before the network is built or tested.The pingall just check the connectivity, so duplicate-address problems may not be obvious from this results.In my evidence/dad.txt , IPV6 DAD can detect that an address is already in use and mark the duplicate address as dadfailed. IPv4 does not have an equivalent built-in duplicate address detection mechanism, so the duplicate IPv4 address may remain configured."
+  git:
+    question: "What does your Git history give you that copying files into folders named topology-v2-final wouldn't?"
+    answer: " Git history records changes as commits, allowing me to see what changed, when it changed and which version contained a particular change. I can use git diff to compare versions and revert to an earlier commit if something goes wrong. Copying files into folders such as topology-v2-final creates separate copies but does not provide the same clear change history or comparison tools."
