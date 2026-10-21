@@ -1,0 +1,4 @@
+PROBLEM: h4 and h2 both use 10.83.0.2
+PROBLEM: h4 and h2 both use fd00:4883::2
+PROBLEM: Link to s9 does not exist
+Fix the description and try again.
