@@ -69,6 +69,14 @@ def check(spec):
                 problems.append(f"{name} and {exist[address]} both use {address}")
             else:
                 exist[address] = name
+    nodes = set(spec["switches"])
+    nodes.update(host["name"] for host in spec["hosts"])
+    
+    reported = set()
+    for link in spec["links"]:
+        for node in link:
+            if node not in nodes and node not in reported:
+                problems.append(f"Link to {node} does not exist")
     return problems
 
 
