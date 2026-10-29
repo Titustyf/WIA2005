@@ -77,6 +77,7 @@ def check(spec):
         for node in link:
             if node not in nodes and node not in reported:
                 problems.append(f"Link to {node} does not exist")
+                reported.add(node)
     return problems
 
 
