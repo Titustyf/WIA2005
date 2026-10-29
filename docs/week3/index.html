@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Network 4883: routed, from data</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 52rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; color: #1f2937; }
+  h1 { font-size: 1.6rem; margin-bottom: .2rem; } h2 { margin-top: 2.2rem; border-bottom: 1px solid #e5e7eb; }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; margin-bottom: 1rem; } th, td { border-bottom: 1px solid #e5e7eb; padding: .35rem .5rem; text-align: left; }
+  pre { background: #111827; color: #f3f4f6; padding: .8rem; border-radius: .4rem; overflow-x: auto; font-size: .82rem; }
+  #diagram svg { max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: .4rem; }
+  .meta, .file { color: #6b7280; font-size: .85rem; } code { font-size: .88em; }
+</style>
+</head>
+<body>
+<p class="meta"><a href="../">← Week 2: my network, built from data</a></p>
+<h1>My routed network, from data</h1>
+<p class="meta">Student ID ending 4883 · generated from <code>network.yaml</code> by <code>make_page3.py</code> on 2026-10-29</p>
+<p id="summary">4 routers, 4 LANs and 6 router links, with 11 static routes, on <code>10.83.0.0/16</code>.
+Every route was checked for loops and missing routes before it reached a router.</p>
+<p>Repository: <a id="repository" href="https://github.com/Titustyf/WIA2005">https://github.com/Titustyf/WIA2005</a></p>
+
+<h2>The network</h2>
+<h3>LANs</h3>
+<section id="lans"><table><thead><tr><th>LAN</th><th>Network</th><th>Router (.1)</th><th>Host (.10)</th></tr></thead><tbody><tr><td>lan-h1</td><td><code>10.83.1.0/24</code></td><td>r1</td><td>h1 <code>10.83.1.10</code></td></tr><tr><td>lan-h2</td><td><code>10.83.2.0/24</code></td><td>r2</td><td>h2 <code>10.83.2.10</code></td></tr><tr><td>lan-h3</td><td><code>10.83.3.0/24</code></td><td>r3</td><td>h3 <code>10.83.3.10</code></td></tr><tr><td>lan-h4</td><td><code>10.83.4.0/24</code></td><td>r4</td><td>h4 <code>10.83.4.10</code></td></tr></tbody></table></section>
+<h3>Router links</h3>
+<section id="links"><table><thead><tr><th>Link</th><th>Network</th></tr></thead><tbody><tr><td>r1 — r2</td><td><code>10.83.12.0/30</code></td></tr><tr><td>r1 — r3</td><td><code>10.83.13.0/30</code></td></tr><tr><td>r1 — r4</td><td><code>10.83.14.0/30</code></td></tr><tr><td>r2 — r3</td><td><code>10.83.23.0/30</code></td></tr><tr><td>r2 — r4</td><td><code>10.83.24.0/30</code></td></tr><tr><td>r3 — r4</td><td><code>10.83.34.0/30</code></td></tr></tbody></table></section>
+<h3>Diagram</h3>
+<div id="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" font-family="Arial, sans-serif" text-anchor="middle">
+<rect width="900" height="640" fill="white"/>
+<line x1="110" y1="170" x2="300" y2="170" stroke="#16a34a" stroke-width="3"/>
+<line x1="790" y1="170" x2="600" y2="170" stroke="#16a34a" stroke-width="3"/>
+<line x1="790" y1="470" x2="600" y2="470" stroke="#16a34a" stroke-width="3"/>
+<line x1="110" y1="470" x2="300" y2="470" stroke="#16a34a" stroke-width="3"/>
+<line x1="300" y1="170" x2="600" y2="170" stroke="#2563eb" stroke-width="4"/>
+<line x1="300" y1="170" x2="600" y2="470" stroke="#2563eb" stroke-width="4"/>
+<line x1="300" y1="170" x2="300" y2="470" stroke="#2563eb" stroke-width="4"/>
+<line x1="600" y1="170" x2="600" y2="470" stroke="#2563eb" stroke-width="4"/>
+<line x1="600" y1="170" x2="300" y2="470" stroke="#2563eb" stroke-width="4"/>
+<line x1="600" y1="470" x2="300" y2="470" stroke="#2563eb" stroke-width="4"/>
+<rect x="398.0" y="157.0" width="104" height="26" rx="6" fill="white" stroke="#94a3b8"/>
+<text x="450.0" y="175.0" font-size="14" fill="#1e293b">10.83.12.0/30</text>
+<rect x="338.0" y="247.0" width="104" height="26" rx="6" fill="white" stroke="#94a3b8"/>
+<text x="390.0" y="265.0" font-size="14" fill="#1e293b">10.83.13.0/30</text>
+<rect x="248.0" y="307.0" width="104" height="26" rx="6" fill="white" stroke="#94a3b8"/>
+<text x="300.0" y="325.0" font-size="14" fill="#1e293b">10.83.14.0/30</text>
+<rect x="548.0" y="307.0" width="104" height="26" rx="6" fill="white" stroke="#94a3b8"/>
+<text x="600.0" y="325.0" font-size="14" fill="#1e293b">10.83.23.0/30</text>
+<rect x="458.0" y="247.0" width="104" height="26" rx="6" fill="white" stroke="#94a3b8"/>
+<text x="510.0" y="265.0" font-size="14" fill="#1e293b">10.83.24.0/30</text>
+<rect x="398.0" y="457.0" width="104" height="26" rx="6" fill="white" stroke="#94a3b8"/>
+<text x="450.0" y="475.0" font-size="14" fill="#1e293b">10.83.34.0/30</text>
+<circle cx="300" cy="170" r="52" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+<text x="300" y="179" font-size="26" font-weight="bold" fill="#1e3a8a">r1</text>
+<circle cx="600" cy="170" r="52" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+<text x="600" y="179" font-size="26" font-weight="bold" fill="#1e3a8a">r2</text>
+<circle cx="600" cy="470" r="52" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+<text x="600" y="479" font-size="26" font-weight="bold" fill="#1e3a8a">r3</text>
+<circle cx="300" cy="470" r="52" fill="#dbeafe" stroke="#2563eb" stroke-width="4"/>
+<text x="300" y="479" font-size="26" font-weight="bold" fill="#1e3a8a">r4</text>
+<rect x="35" y="136" width="150" height="68" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text x="110" y="164" font-size="18" font-weight="bold" fill="#14532d">h1</text>
+<text x="110" y="188" font-size="14" fill="#166534">10.83.1.0/24</text>
+<rect x="715" y="136" width="150" height="68" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text x="790" y="164" font-size="18" font-weight="bold" fill="#14532d">h2</text>
+<text x="790" y="188" font-size="14" fill="#166534">10.83.2.0/24</text>
+<rect x="715" y="436" width="150" height="68" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text x="790" y="464" font-size="18" font-weight="bold" fill="#14532d">h3</text>
+<text x="790" y="488" font-size="14" fill="#166534">10.83.3.0/24</text>
+<rect x="35" y="436" width="150" height="68" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text x="110" y="464" font-size="18" font-weight="bold" fill="#14532d">h4</text>
+<text x="110" y="488" font-size="14" fill="#166534">10.83.4.0/24</text>
+</svg></div>
+
+<h2>Routing tables</h2>
+<section id="routing-tables"><h3>r1</h3><table>
+<tr><th>Destination</th><th>Next hop</th></tr>
+<tr><td>10.83.12.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.13.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.14.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.1.0/24</td><td>directly connected</td></tr>
+<tr><td>10.83.4.0/24</td><td>10.83.14.2</td></tr>
+<tr><td>10.83.2.0/23</td><td>10.83.12.2</td></tr>
+</table>
+<h3>r2</h3><table>
+<tr><th>Destination</th><th>Next hop</th></tr>
+<tr><td>10.83.12.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.23.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.24.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.1.0/24</td><td>10.83.12.1</td></tr>
+<tr><td>10.83.2.0/24</td><td>directly connected</td></tr>
+<tr><td>10.83.3.0/24</td><td>10.83.23.2</td></tr>
+<tr><td>10.83.4.0/24</td><td>10.83.24.2</td></tr>
+</table>
+<h3>r3</h3><table>
+<tr><th>Destination</th><th>Next hop</th></tr>
+<tr><td>10.83.13.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.23.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.34.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.1.0/24</td><td>10.83.13.1</td></tr>
+<tr><td>10.83.2.0/24</td><td>10.83.23.1</td></tr>
+<tr><td>10.83.3.0/24</td><td>directly connected</td></tr>
+<tr><td>10.83.4.0/24</td><td>10.83.34.2</td></tr>
+</table>
+<h3>r4</h3><table>
+<tr><th>Destination</th><th>Next hop</th></tr>
+<tr><td>10.83.14.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.24.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.34.0/30</td><td>directly connected</td></tr>
+<tr><td>10.83.1.0/24</td><td>10.83.14.1</td></tr>
+<tr><td>10.83.2.0/24</td><td>10.83.24.1</td></tr>
+<tr><td>10.83.3.0/24</td><td>10.83.34.1</td></tr>
+<tr><td>10.83.4.0/24</td><td>directly connected</td></tr>
+</table></section>
+
+<h2>Evidence from the running network</h2>
+<section id="evidence"><h3>Every router&#x27;s routing table: ip route</h3>
+<p class="file">evidence3/routes.txt</p>
+<pre id="evidence-routes">== r1
+10.83.1.0/24 dev r1-eth0 proto kernel scope link src 10.83.1.1 
+10.83.2.0/23 via 10.83.12.2 dev r1-eth1 
+10.83.4.0/24 via 10.83.14.2 dev r1-eth3 
+10.83.12.0/30 dev r1-eth1 proto kernel scope link src 10.83.12.1 
+10.83.13.0/30 dev r1-eth2 proto kernel scope link src 10.83.13.1 
+10.83.14.0/30 dev r1-eth3 proto kernel scope link src 10.83.14.1 
+== r2
+10.83.1.0/24 via 10.83.12.1 dev r2-eth1 
+10.83.2.0/24 dev r2-eth0 proto kernel scope link src 10.83.2.1 
+10.83.3.0/24 via 10.83.23.2 dev r2-eth2 
+10.83.4.0/24 via 10.83.24.2 dev r2-eth3 
+10.83.12.0/30 dev r2-eth1 proto kernel scope link src 10.83.12.2 
+10.83.23.0/30 dev r2-eth2 proto kernel scope link src 10.83.23.1 
+10.83.24.0/30 dev r2-eth3 proto kernel scope link src 10.83.24.1</pre>
+<h3>From one host to every other: traceroute</h3>
+<p class="file">evidence3/traces.txt</p>
+<pre id="evidence-traces">traceroute to 10.83.2.10 (10.83.2.10), 30 hops max, 60 byte packets
+ 1  10.83.1.1  0.389 ms  0.265 ms  0.268 ms
+ 2  10.83.12.2  0.271 ms  0.248 ms  0.250 ms
+ 3  10.83.2.10  0.255 ms  0.197 ms  0.189 ms
+traceroute to 10.83.3.10 (10.83.3.10), 30 hops max, 60 byte packets
+ 1  10.83.1.1  0.238 ms  0.217 ms  0.221 ms
+ 2  10.83.12.2  0.264 ms  0.267 ms  0.324 ms
+ 3  10.83.13.2  0.422 ms  0.404 ms  0.417 ms
+ 4  10.83.3.10  0.432 ms  0.418 ms  0.417 ms
+traceroute to 10.83.4.10 (10.83.4.10), 30 hops max, 60 byte packets
+ 1  10.83.1.1  0.217 ms  0.190 ms  0.191 ms
+ 2  10.83.14.2  0.194 ms  0.161 ms  0.161 ms
+ 3  10.83.4.10  0.164 ms  0.147 ms  0.143 ms</pre>
+<h3>Your summary route at work: ip route get</h3>
+<p class="file">evidence3/summary.txt</p>
+<pre id="evidence-summary">10.83.2.10 via 10.83.12.2 dev r1-eth1 src 10.83.12.1 uid 0 
+    cache 
+10.83.3.10 via 10.83.12.2 dev r1-eth1 src 10.83.12.1 uid 0 
+    cache</pre>
+<h3>A link goes down: what static routes do</h3>
+<p class="file">evidence3/failure.txt</p>
+<pre id="evidence-failure">traceroute to 10.83.4.10 (10.83.4.10), 5 hops max, 60 byte packets
+ 1  10.83.1.1  0.104 ms !N
+RTNETLINK answers: Network is unreachable</pre>
+<h3>check_paths() stopping a loop and a missing route</h3>
+<p class="file">evidence3/check.txt</p>
+<pre id="evidence-check">PROBLEM: LOOP: h1 -&gt; h4: router r1 visited twice
+PROBLEM: LOOP: h2 -&gt; h4: router r2 visited twice
+Fix the description and try again: nothing was built.
+PROBLEM: NO ROUTE: h1 -&gt; h3: router r2 has no route to 10.83.3.10
+PROBLEM: NO ROUTE: h2 -&gt; h3: router r2 has no route to 10.83.3.10
+Fix the description and try again: nothing was built.</pre></section>
+
+<h2>What I learned</h2>
+<section id="answers"><section id="answer-design"><h3>Describe your design: why these routers, LANs and links, and how you chose the addresses.</h3><p>I designed a network with four routers (r1, r2, r3 and r4), each connected to its own LAN and host. Each LAN uses a /24 subnet, from 10.83.1.0/24 to 10.83.4.0/24, with the host address ending in .10.</p><p>The routers are interconnected using /30 point-to-point subnets, which provide two usable IP addresses per link and reduce address waste.</p><p>The full-mesh topology provides multiple physical paths between routers, allowing alternative paths to exist if a link fails.</p></section>
+<section id="answer-summary"><h3>Which route summarises several LANs? Which networks does it cover, why is it correct, and what else would it attract if you added a network inside its range?</h3><p>Router r1 uses the summary route 10.83.2.0/23 via 10.83.12.2. It covers the LANs 10.83.2.0/24 for h2 and 10.83.3.0/24 for h3.</p><p>The /23 prefix is correctly aligned at 10.83.2.0 and combines these two consecutive /24 networks into one route. The ip route get tests confirmed that both 10.83.2.10 and 10.83.3.10 use the same next hop, 10.83.12.2.</p><p>If another network inside the 10.83.2.0/23 range were added, traffic to that network could also be sent to r2 by this summary route, even if the new network was not configured or reachable there.</p></section>
+<section id="answer-failure"><h3>When you took a link down, what happened, and why couldn&#x27;t your routes recover even though another path existed? What would have recovered?</h3><p>When I brought down the r1-r4 link, traceroute from h1 to h4 failed with a network-unreachable response.</p><p>The route lookup on r1 also reported that the network was unreachable. Although another physical path existed through r2, the configured static route to 10.83.4.0/24 pointed only to 10.83.14.2 through r4.</p><p>Bringing the link back up did not automatically reinstall the removed route in my lab. Connectivity was restored by adding the static route again.</p><p>A backup static route or a dynamic routing protocol such as OSPF could provide an alternative path when a link fails</p></section>
+<section id="answer-control_plane"><h3>In your network, what was the control plane? Who worked out the routes, and what does that mean for a network of 40 routers?</h3><p>My network used static routing as my control plane , I decided the routes and configured them in network.yaml.</p><p>The build script installed these routes into the routers&#x27; routing tables, while the forwarding plane used those tables to send packets to their destinations.</p><p>With 40 routers, manually maintaining static routes would become more difficult and error-prone as the network grows.</p><p>A routing protocol such as OSPF would allow routers to exchange routing information and recalculate paths when topology changes occur.</p></section></section>
+
+<script type="application/json" id="network-data">{
+  "student_id_last4": "4883",
+  "routers": [
+    "r1",
+    "r2",
+    "r3",
+    "r4"
+  ],
+  "lans": [
+    {
+      "name": "lan-h1",
+      "network": "10.83.1.0/24",
+      "router": "r1",
+      "host": "h1"
+    },
+    {
+      "name": "lan-h2",
+      "network": "10.83.2.0/24",
+      "router": "r2",
+      "host": "h2"
+    },
+    {
+      "name": "lan-h3",
+      "network": "10.83.3.0/24",
+      "router": "r3",
+      "host": "h3"
+    },
+    {
+      "name": "lan-h4",
+      "network": "10.83.4.0/24",
+      "router": "r4",
+      "host": "h4"
+    }
+  ],
+  "links": [
+    [
+      "r1",
+      "r2",
+      "10.83.12.0/30"
+    ],
+    [
+      "r1",
+      "r3",
+      "10.83.13.0/30"
+    ],
+    [
+      "r1",
+      "r4",
+      "10.83.14.0/30"
+    ],
+    [
+      "r2",
+      "r3",
+      "10.83.23.0/30"
+    ],
+    [
+      "r2",
+      "r4",
+      "10.83.24.0/30"
+    ],
+    [
+      "r3",
+      "r4",
+      "10.83.34.0/30"
+    ]
+  ],
+  "routes": {
+    "r1": [
+      {
+        "to": "10.83.2.0/23",
+        "via": "10.83.12.2"
+      },
+      {
+        "to": "10.83.4.0/24",
+        "via": "10.83.14.2"
+      }
+    ],
+    "r2": [
+      {
+        "to": "10.83.1.0/24",
+        "via": "10.83.12.1"
+      },
+      {
+        "to": "10.83.3.0/24",
+        "via": "10.83.23.2"
+      },
+      {
+        "to": "10.83.4.0/24",
+        "via": "10.83.24.2"
+      }
+    ],
+    "r3": [
+      {
+        "to": "10.83.1.0/24",
+        "via": "10.83.13.1"
+      },
+      {
+        "to": "10.83.2.0/24",
+        "via": "10.83.23.1"
+      },
+      {
+        "to": "10.83.4.0/24",
+        "via": "10.83.34.2"
+      }
+    ],
+    "r4": [
+      {
+        "to": "10.83.1.0/24",
+        "via": "10.83.14.1"
+      },
+      {
+        "to": "10.83.2.0/24",
+        "via": "10.83.24.1"
+      },
+      {
+        "to": "10.83.3.0/24",
+        "via": "10.83.34.1"
+      }
+    ]
+  }
+}</script>
+</body>
+</html>

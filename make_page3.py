@@ -11,6 +11,7 @@ docs/week3/index.html with your network, your evidence (evidence3/) and your ans
 
 One part is yours to write: routing_tables_section(). Look for TODO.
 """
+from html import escape
 import datetime
 import html
 import ipaddress  # for routing_tables_section()
@@ -65,16 +66,110 @@ def routing_tables_section(spec):
         <tr><td>10.7.12.0/30</td><td>directly connected</td></tr> ...</table>
     Use esc() on every value.
     """
-    return "<p>TODO: show each router's routing table.</p>"
+    tables = []
+    interfaces = plan(spec)
+    routes = spec.get("routes") or {}
+
+    for router in spec["routers"]:
+        entries = []
+
+        # Directly connected networks
+        for interface in interfaces[router]:
+            network = interface.network
+            entries.append((
+                network.prefixlen,
+                str(network),
+                "directly connected",
+            ))
+
+        # Configured static routes
+        for route in routes.get(router) or []:
+            network = ipaddress.ip_network(route["to"])
+            entries.append((
+                network.prefixlen,
+                str(network),
+                str(route["via"]),
+            ))
+
+        # Prefer the longest prefix first
+        entries.sort(key=lambda entry: (-entry[0], entry[1]))
+
+        rows = [
+            "<table>",
+            "<tr><th>Destination</th><th>Next hop</th></tr>",
+        ]
+
+        for prefixlen, destination, next_hop in entries:
+            rows.append(
+                f"<tr><td>{esc(destination)}</td>"
+                f"<td>{esc(next_hop)}</td></tr>"
+            )
+
+        rows.append("</table>")
+        tables.append(f"<h3>{esc(router)}</h3>" + "\n".join(rows))
+
+    return "\n".join(tables)
 
 
-def mermaid_diagram(spec):
-    lines = ["graph LR"]
-    for host, (address, router) in hosts(spec).items():
-        lines.append(f'  {host}["{host}<br>{address}"] --- {router}(({router}))')
-    for a, b, network in spec["links"]:
-        lines.append(f"  {a}(({a})) ---|{network}| {b}(({b}))")
-    return "\n".join(lines)
+def svg_diagram(spec):
+    routers = spec["routers"]                      # r1 TL, r2 TR, r3 BR, r4 BL
+    lan = {l["router"]: l for l in spec["lans"]}
+
+    W, H, R = 900, 640, 52                         # canvas size, router radius
+    corners = [(300, 170), (600, 170), (600, 470), (300, 470)]
+    rpos = dict(zip(routers, corners))
+
+    # hosts sit outside their router (left side for left corners, right for right)
+    hpos = {}
+    for i, r in enumerate(routers):
+        x, y = rpos[r]
+        hpos[r] = (x - 190, y) if i in (0, 3) else (x + 190, y)
+
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
+           f'font-family="Arial, sans-serif" text-anchor="middle">',
+           f'<rect width="{W}" height="{H}" fill="white"/>']
+
+    # 1. host <-> router lines
+    for r in routers:
+        (x1, y1), (x2, y2) = hpos[r], rpos[r]
+        out.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" '
+                   f'stroke="#16a34a" stroke-width="3"/>')
+
+    # 2. router <-> router links (lines first, labels after so they sit on top)
+    labels = []
+    for a, b, net in spec["links"]:
+        (x1, y1), (x2, y2) = rpos[a], rpos[b]
+        out.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" '
+                   f'stroke="#2563eb" stroke-width="4"/>')
+        diagonal = (routers.index(a) - routers.index(b)) % 4 == 2
+        t = 0.3 if diagonal else 0.5               # keep the two diagonal labels apart
+        labels.append((x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, net))
+
+    for x, y, net in labels:
+        out.append(f'<rect x="{x-52}" y="{y-13}" width="104" height="26" rx="6" '
+                   f'fill="white" stroke="#94a3b8"/>')
+        out.append(f'<text x="{x}" y="{y+5}" font-size="14" fill="#1e293b">{escape(net)}</text>')
+
+    # 3. routers (big circles)
+    for r, (x, y) in rpos.items():
+        out.append(f'<circle cx="{x}" cy="{y}" r="{R}" fill="#dbeafe" '
+                   f'stroke="#2563eb" stroke-width="4"/>')
+        out.append(f'<text x="{x}" y="{y+9}" font-size="26" font-weight="bold" '
+                   f'fill="#1e3a8a">{escape(r)}</text>')
+
+    # 4. hosts
+    for r in routers:
+        x, y = hpos[r]
+        l = lan[r]
+        out.append(f'<rect x="{x-75}" y="{y-34}" width="150" height="68" rx="10" '
+                   f'fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>')
+        out.append(f'<text x="{x}" y="{y-6}" font-size="18" font-weight="bold" '
+                   f'fill="#14532d">{escape(l["host"])}</text>')
+        out.append(f'<text x="{x}" y="{y+18}" font-size="14" fill="#166534">'
+                   f'{escape(l["network"])}</text>')
+
+    out.append("</svg>")
+    return "\n".join(out)
 
 
 def evidence_section(ev_id, path, title):
@@ -109,7 +204,7 @@ PAGE = """<!doctype html>
   h1 {{ font-size: 1.6rem; margin-bottom: .2rem; }} h2 {{ margin-top: 2.2rem; border-bottom: 1px solid #e5e7eb; }}
   table {{ border-collapse: collapse; width: 100%; font-size: .92rem; margin-bottom: 1rem; }} th, td {{ border-bottom: 1px solid #e5e7eb; padding: .35rem .5rem; text-align: left; }}
   pre {{ background: #111827; color: #f3f4f6; padding: .8rem; border-radius: .4rem; overflow-x: auto; font-size: .82rem; }}
-  pre.mermaid {{ background: none; color: inherit; }} pre.missing {{ background: #fef2f2; color: #991b1b; }}
+  #diagram svg {{ max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: .4rem; }}
   .meta, .file {{ color: #6b7280; font-size: .85rem; }} code {{ font-size: .88em; }}
 </style>
 </head>
@@ -127,7 +222,7 @@ Every route was checked for loops and missing routes before it reached a router.
 <h3>Router links</h3>
 <section id="links">{links}</section>
 <h3>Diagram</h3>
-<pre class="mermaid" id="diagram">{diagram}</pre>
+<div id="diagram">{diagram}</div>
 
 <h2>Routing tables</h2>
 <section id="routing-tables">{tables}</section>
@@ -139,10 +234,6 @@ Every route was checked for loops and missing routes before it reached a router.
 <section id="answers">{answers}</section>
 
 <script type="application/json" id="network-data">{data}</script>
-<script type="module">
-  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-  mermaid.initialize({{ startOnLoad: true }});
-</script>
 </body>
 </html>
 """
@@ -179,7 +270,8 @@ def main():
                 repo=esc(page.get("repository", "")),
                 lans=lans_section(spec),
                 links=links_section(spec),
-                diagram=esc(mermaid_diagram(spec)),
+                #diagram=esc(mermaid_diagram(spec)),
+                diagram=svg_diagram(spec),
                 tables=routing_tables_section(spec),
                 evidence="\n".join(evidence_section(*e) for e in EVIDENCE),
                 answers=answers_section(page),

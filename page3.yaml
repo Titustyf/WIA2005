@@ -2,18 +2,46 @@
 # A few sentences each, in your own words, about YOUR network and YOUR evidence.
 # Leave a blank line between paragraphs. Never put your name or full student ID here.
 
-repository: https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+repository: https://github.com/Titustyf/WIA2005
 
 answers:
   design:
     question: "Describe your design: why these routers, LANs and links, and how you chose the addresses."
-    answer: ""
+    answer: |
+      I designed a network with four routers (r1, r2, r3 and r4), each connected to its own LAN and host. Each LAN uses a /24 subnet, from 10.83.1.0/24 to 10.83.4.0/24, with the host address ending in .10. 
+      
+      The routers are interconnected using /30 point-to-point subnets, which provide two usable IP addresses per link and reduce address waste. 
+      
+      The full-mesh topology provides multiple physical paths between routers, allowing alternative paths to exist if a link fails.
+
   summary:
     question: "Which route summarises several LANs? Which networks does it cover, why is it correct, and what else would it attract if you added a network inside its range?"
-    answer: ""
+    answer: |
+      Router r1 uses the summary route 10.83.2.0/23 via 10.83.12.2. It covers the LANs 10.83.2.0/24 for h2 and 10.83.3.0/24 for h3. 
+      
+      The /23 prefix is correctly aligned at 10.83.2.0 and combines these two consecutive /24 networks into one route. The ip route get tests confirmed that both 10.83.2.10 and 10.83.3.10 use the same next hop, 10.83.12.2. 
+      
+      If another network inside the 10.83.2.0/23 range were added, traffic to that network could also be sent to r2 by this summary route, even if the new network was not configured or reachable there.
+
   failure:
     question: "When you took a link down, what happened, and why couldn't your routes recover even though another path existed? What would have recovered?"
-    answer: ""
+    answer: |
+      When I brought down the r1-r4 link, traceroute from h1 to h4 failed with a network-unreachable response. 
+      
+      The route lookup on r1 also reported that the network was unreachable. Although another physical path existed through r2, the configured static route to 10.83.4.0/24 pointed only to 10.83.14.2 through r4. 
+      
+      Bringing the link back up did not automatically reinstall the removed route in my lab. Connectivity was restored by adding the static route again. 
+      
+      A backup static route or a dynamic routing protocol such as OSPF could provide an alternative path when a link fails
+
+
   control_plane:
     question: "In your network, what was the control plane? Who worked out the routes, and what does that mean for a network of 40 routers?"
-    answer: ""
+    answer:  |
+      My network used static routing as my control plane , I decided the routes and configured them in network.yaml. 
+      
+      The build script installed these routes into the routers' routing tables, while the forwarding plane used those tables to send packets to their destinations. 
+      
+      With 40 routers, manually maintaining static routes would become more difficult and error-prone as the network grows. 
+      
+      A routing protocol such as OSPF would allow routers to exchange routing information and recalculate paths when topology changes occur.
