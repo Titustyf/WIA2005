@@ -186,7 +186,7 @@ PAGE = """<!doctype html>
 </style>
 </head>
 <body>
-<a href="https://titustyf.github.io/WIA2005/week3/">Week 3: My routed network, from data →</a>
+<p class="meta"><a href="https://titustyf.github.io/WIA2005/week3/">Week 3: My routed network, from data →</a></p>
 <h1>My network, built from data</h1>
 <p class="meta">Student ID ending {last4} · generated from <code>{source}</code> by <code>make_page.py</code> on {today}</p>
 <p id="summary">{n_switches} switches, {n_hosts} hosts and {n_links} links, on IPv4 <code>{v4_block}</code> and IPv6 <code>{v6_block}</code>.
