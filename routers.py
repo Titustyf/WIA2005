@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Week 3 topology: three Linux routers and three hosts, on your own addresses.
+r"""Week 3 topology: three Linux routers and three hosts, on your own addresses.
 
     h1 ---- r1 ------------ r2 ---- h2
               \            /  \
@@ -161,7 +161,48 @@ def check_paths(routes, nn):
     Return the list of problem messages, like check() in Week 2.
     """
     problems = []
-    # TODO: your code here
+    for src in GATEWAYS:
+        for dst in GATEWAYS:
+            if src == dst:
+                continue
+
+            destination = ipaddress.ip_address(
+                f"10.{nn}.{GATEWAYS[dst]}.10"
+            )
+
+            current_ip = ipaddress.ip_address(
+                f"10.{nn}.{GATEWAYS[src]}.1"
+            )
+            router = owner(current_ip, nn)
+
+            visited = []
+
+            while True:
+                if router in visited:
+                    path = visited + [router]
+                    problems.append(
+                        f"{src} to {dst}: loop {' -> '.join(path)}"
+                    )
+                    break
+
+                visited.append(router)
+
+                action, next_hop = lookup(
+                    router, destination, routes, nn
+                )
+
+                if action == "connected":
+                    break
+
+                elif action == "none":
+                    problems.append(
+                        f"{src} to {dst}: {router} has no route "
+                        f"to {destination}"
+                    )
+                    break
+
+                elif action == "via":
+                    router = owner(next_hop, nn)
     return problems
 
 
