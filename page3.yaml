@@ -26,11 +26,11 @@ answers:
   failure:
     question: "When you took a link down, what happened, and why couldn't your routes recover even though another path existed? What would have recovered?"
     answer: |
-      When I brought down the r1-r4 link, traceroute from h1 to h4 failed with a network-unreachable response. 
+      When I brought down the r1-r4 link, traceroute from h1 to h4 failed because r1 could no longer reach the destination using its configured static route.
       
-      The route lookup on r1 also reported that the network was unreachable. Although another physical path existed through r2, the configured static route to 10.83.4.0/24 pointed only to 10.83.14.2 through r4. 
+      Although an alternative physical path existed through r2, r1 had no backup static route configured to use it.
       
-      Bringing the link back up did not automatically reinstall the removed route in my lab. Connectivity was restored by adding the static route again. 
+      Bringing the link back up did not restore the missing route in my lab. Connectivity was restored by adding the static route again. 
       
       A backup static route or a dynamic routing protocol such as OSPF could provide an alternative path when a link fails
 
@@ -38,7 +38,7 @@ answers:
   control_plane:
     question: "In your network, what was the control plane? Who worked out the routes, and what does that mean for a network of 40 routers?"
     answer:  |
-      My network used static routing as my control plane , I decided the routes and configured them in network.yaml. 
+      My network used static routing , I decided which routes to use and configured them in network.yaml. 
       
       The build script installed these routes into the routers' routing tables, while the forwarding plane used those tables to send packets to their destinations. 
       
