@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-r"""Week 3 topology: three Linux routers and three hosts, on your own addresses.
+"""Week 3 topology: three Linux routers and three hosts, on your own addresses.
 
     h1 ---- r1 ------------ r2 ---- h2
               \            /  \

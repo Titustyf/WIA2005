@@ -1,0 +1,3 @@
+traceroute to 10.83.32.10 (10.83.32.10), 30 hops max, 60 byte packets
+ 1  10.83.1.1  0.062 ms  0.011 ms  0.005 ms
+ 2  10.83.13.2  0.017 ms !N  0.007 ms !N  0.006 ms !N
