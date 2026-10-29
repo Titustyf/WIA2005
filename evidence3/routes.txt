@@ -1,0 +1,15 @@
+== r1
+10.83.1.0/24 dev r1-eth0 proto kernel scope link src 10.83.1.1 
+10.83.2.0/23 via 10.83.12.2 dev r1-eth1 
+10.83.4.0/24 via 10.83.14.2 dev r1-eth3 
+10.83.12.0/30 dev r1-eth1 proto kernel scope link src 10.83.12.1 
+10.83.13.0/30 dev r1-eth2 proto kernel scope link src 10.83.13.1 
+10.83.14.0/30 dev r1-eth3 proto kernel scope link src 10.83.14.1 
+== r2
+10.83.1.0/24 via 10.83.12.1 dev r2-eth1 
+10.83.2.0/24 dev r2-eth0 proto kernel scope link src 10.83.2.1 
+10.83.3.0/24 via 10.83.23.2 dev r2-eth2 
+10.83.4.0/24 via 10.83.24.2 dev r2-eth3 
+10.83.12.0/30 dev r2-eth1 proto kernel scope link src 10.83.12.2 
+10.83.23.0/30 dev r2-eth2 proto kernel scope link src 10.83.23.1 
+10.83.24.0/30 dev r2-eth3 proto kernel scope link src 10.83.24.1 

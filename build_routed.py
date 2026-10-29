@@ -151,7 +151,54 @@ def check_paths(spec):
     find hosts, routers and next hops changes.
     """
     problems = []
-    # TODO: your code here
+    host_info = hosts(spec)
+
+    for src_host, (src_addr, src_router) in host_info.items():
+        for dst_host, (dst_addr, dst_router) in host_info.items():
+            if src_host == dst_host:
+                continue
+
+            router = src_router
+            visited = set()
+
+            while router != dst_router:
+                if router in visited:
+                    problems.append(
+                        f"LOOP: {src_host} -> {dst_host}: "
+                        f"router {router} visited twice"
+                    )
+                    break
+
+                visited.add(router)
+
+                status, next_hop = lookup(spec, router, dst_addr)
+
+                if status == "none":
+                    problems.append(
+                        f"NO ROUTE: {src_host} -> {dst_host}: "
+                        f"router {router} has no route to {dst_addr}"
+                    )
+                    break
+
+                if status == "connected":
+                    problems.append(
+                        f"NO ROUTE: {src_host} -> {dst_host}: "
+                        f"router {router} has a connected route, "
+                        f"but the destination router is {dst_router}"
+                    )
+                    break
+
+                next_router = owner(spec, next_hop)
+
+                if next_router is None:
+                    problems.append(
+                        f"INVALID NEXT HOP: {src_host} -> {dst_host}: "
+                        f"next hop {next_hop} is not owned by any node"
+                    )
+                    break
+
+                router = next_router
+
     return problems
 
 
