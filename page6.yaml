@@ -2,21 +2,59 @@
 # A few sentences each, in your own words, about YOUR overlay and YOUR evidence.
 # Leave a blank line between paragraphs. Don't put your name or your full student ID in this file.
 
-repository: https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+repository: https://github.com/Titustyf/WIA2005
 
 answers:
   design:
     question: "Describe your design: hypervisors, tenants, VNIs and addresses. Which tenants overlap, and why did you place each VM where you did?"
-    answer: ""
+    answer: |
+      The design uses three hypervisors (hv1, hv2, hv3), two tenants (student and staff). The student uses VNI 101 and staff uses VNI 102.
+
+      Hypervisors(Underlay): hv1 10.83.0.1, hv2 10.83.0.2, hv3 10.83.0.3
+
+      Student (VNI 101, MTU 1450): student1 (10.83.50.10) on hv1, student2 (10.83.50.11) on hv2 and student3 (10.83.50.12) on hv3.
+      
+      Staff (VNI 102, MTU 1450): staff1 (10.83.50.10) on hv1, staff2 (10.83.50.11) on hv3
+
+      Both tenants use the same 10.83.50.0/24 subnet but have separate bridges and VXLAN VNIs. This shows overlapping IP addressing between tenants.
+
+      The VMs are distributed across different hypervisors to demonstrate communication between hosts through the VXLAN overlay.
+  
   isolation:
     question: "Two of your VMs have the same IP address. Using your evidence, explain how a ping reaches the right one — and what would have to go wrong for one tenant to see another's traffic."
-    answer: ""
+    answer: |
+      The student and staff tenants reuse the same IP addresses.
+
+      A ping from student1 to 10.83.50.11 reaches student2 through VNI 101. The destination MAC address is learned within this VNI. 
+      
+      The staff tenant uses a separate bridge and VNI 102, so it does not receive the student traffic. Incorrect VNI mapping or bridge configuration could cause traffic leakage between tenants.
+  
   flood_learn:
     question: "Using your evidence, explain what was flooded, to which hypervisors, and what each VTEP learned. With 50 hypervisors in one VNI, how many copies would one broadcast need — and how would EVPN change that?"
-    answer: ""
-  mtu:
+    answer: |
+      The broadcast traffic is flooded to all hypervisors in the same VNI. Each VTEP learns the MAC addresses of the VMs connected to it and associates them with the corresponding VNI.
+      
+      The evidence in flood.txt is student1 ping student2, hv1 flooded the ARP request using VNI 101 and replicated it to hv2 and hv3.
+      
+      The tcpdump capture on hv3-eth0 confirmed a VXLAN packet from 10.83.0.1 to 10.83.0.3 using UDP port 4789,containing the ARP request for 10.83.50.11.
+      
+      After communication, hv1 learned student2's MAC address (02:00:00:65:00:0b) through hv2 and hv3 also learned student1's MAC address (02:00:00:65:00:0a) through hv1
+      
+      With 50 hypervisors in one VNI, a broadcast from one hypervisor would require 49 remote copies. EVPN uses BGP to advertise MAC and IP reachability information, reducing unnecessary flooding through mechanisms such as ARP suppression.
+  mtu:    
     question: "Compare your two MTU fixes using your measurements. Which would you choose for a data centre, what does each cost, and who has to change what?"
-    answer: ""
+    answer: |
+      Fix A reduces the tenant MTU to 1450 bytes, while Fix B increases the underlay MTU to 9000 bytes.
+      
+      The largest successful ICMP payload for Fixes A is 1422 bytes.It requires changing VM interfaces, virtual bridges and VTEPs, and for Fixes B largest successful ICMP payload is 1472 bytes.It requires jumbo-frame support and consistent MTU configuration across physical switches, NICs and VTEPs.
+
+      I would choose Fix B for a data centre because it preserves the standard 1500-byte tenant IP MTU. However, it requires compatible network infrastructure.
   p4:
     question: "If your hypervisors' VTEPs were P4 switches running the lecture's vtep.p4, what would have to fill the vtep_encap table, and how? What would replace flood-and-learn?"
-    answer: ""
+    answer: |
+      The vtep_encap table matches the ingress port and destination MAC address. Its entries provide the tenant VNI, local and remote VTEP addresses, next-hop MAC and egress port.
+
+      A controller can populate these entries through P4Runtime using network and tenant information.
+      
+      Flood-and-learn could be replaced by an EVPN-based control plane. EVPN distributes MAC and IP reachability information between VTEPs using BGP, allowing forwarding entries to be installed without depending on broadcast flooding to discover remote destinations.
+
