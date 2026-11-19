@@ -1,0 +1,3 @@
+PROBLEM: tenant student: a 1500-byte packet becomes 1550 bytes on the underlay, 50 over the underlay MTU of 1500 (largest tenant MTU that fits: 1450)
+PROBLEM: tenant staff: a 1500-byte packet becomes 1550 bytes on the underlay, 50 over the underlay MTU of 1500 (largest tenant MTU that fits: 1450)
+Fix the design and try again: nothing was built.

@@ -1,0 +1,68 @@
+*** Error setting resource limits. Mininet's performance may be affected.
+*** Configuring hosts
+hv1 hv2 hv3 student1 student2 student3 staff1 staff2 
+*** Starting controller
+
+*** Starting 1 switches
+s1 
+*** Starting CLI:
+VTEP commands on hv1 (10.83.0.1):
+  ip link add br101 type bridge
+  ip link set br101 up
+  ip link add vxlan101 type vxlan id 101 local 10.83.0.1 dstport 4789 dev hv1-eth0
+  ip link set vxlan101 master br101
+  ip link set vxlan101 up
+  ip link set hv1-eth1 master br101
+  ip link set hv1-eth1 up
+  bridge fdb append 00:00:00:00:00:00 dev vxlan101 dst 10.83.0.2
+  bridge fdb append 00:00:00:00:00:00 dev vxlan101 dst 10.83.0.3
+  ip link add br102 type bridge
+  ip link set br102 up
+  ip link add vxlan102 type vxlan id 102 local 10.83.0.1 dstport 4789 dev hv1-eth0
+  ip link set vxlan102 master br102
+  ip link set vxlan102 up
+  ip link set hv1-eth2 master br102
+  ip link set hv1-eth2 up
+  bridge fdb append 00:00:00:00:00:00 dev vxlan102 dst 10.83.0.3
+VTEP commands on hv2 (10.83.0.2):
+  ip link add br101 type bridge
+  ip link set br101 up
+  ip link add vxlan101 type vxlan id 101 local 10.83.0.2 dstport 4789 dev hv2-eth0
+  ip link set vxlan101 master br101
+  ip link set vxlan101 up
+  ip link set hv2-eth1 master br101
+  ip link set hv2-eth1 up
+  bridge fdb append 00:00:00:00:00:00 dev vxlan101 dst 10.83.0.1
+  bridge fdb append 00:00:00:00:00:00 dev vxlan101 dst 10.83.0.3
+VTEP commands on hv3 (10.83.0.3):
+  ip link add br101 type bridge
+  ip link set br101 up
+  ip link add vxlan101 type vxlan id 101 local 10.83.0.3 dstport 4789 dev hv3-eth0
+  ip link set vxlan101 master br101
+  ip link set vxlan101 up
+  ip link set hv3-eth1 master br101
+  ip link set hv3-eth1 up
+  bridge fdb append 00:00:00:00:00:00 dev vxlan101 dst 10.83.0.1
+  bridge fdb append 00:00:00:00:00:00 dev vxlan101 dst 10.83.0.2
+  ip link add br102 type bridge
+  ip link set br102 up
+  ip link add vxlan102 type vxlan id 102 local 10.83.0.3 dstport 4789 dev hv3-eth0
+  ip link set vxlan102 master br102
+  ip link set vxlan102 up
+  ip link set hv3-eth2 master br102
+  ip link set hv3-eth2 up
+  bridge fdb append 00:00:00:00:00:00 dev vxlan102 dst 10.83.0.1
+
+Hypervisors: hv1 10.83.0.1, hv2 10.83.0.2, hv3 10.83.0.3
+Tenant student (VNI 101, MTU 1500): student1 10.83.50.10 on hv1, student2 10.83.50.11 on hv2, student3 10.83.50.12 on hv3
+Tenant staff (VNI 102, MTU 1500): staff1 10.83.50.10 on hv1, staff2 10.83.50.11 on hv3
+
+mininet> *** Stopping 0 controllers
+
+*** Stopping 8 links
+........
+*** Stopping 1 switches
+s1 
+*** Stopping 8 hosts
+hv1 hv2 hv3 student1 student2 student3 staff1 staff2 
+*** Done
