@@ -1,0 +1,43 @@
+== hv1: vxlan101 before any traffic
+66:b7:bb:e7:11:67 vlan 1 master br101 permanent
+66:b7:bb:e7:11:67 master br101 permanent
+00:00:00:00:00:00 dst 10.83.0.2 self permanent
+00:00:00:00:00:00 dst 10.83.0.3 self permanent
+== hv3 tcpdump -ni hv3-eth0 -vv -XX 'udp port 4789' > /tmp/hv3.txt 2>&1 &
+PING 10.83.50.11 (10.83.50.11) 56(84) bytes of data.
+64 bytes from 10.83.50.11: icmp_seq=1 ttl=64 time=0.310 ms
+64 bytes from 10.83.50.11: icmp_seq=2 ttl=64 time=0.175 ms
+64 bytes from 10.83.50.11: icmp_seq=3 ttl=64 time=0.410 ms
+
+--- 10.83.50.11 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2087ms
+rtt min/avg/max/mdev = 0.175/0.298/0.410/0.096 ms
+== captured on hv3's underlay
+tcpdump: listening on hv3-eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+11:30:06.012443 IP (tos 0x0, ttl 64, id 25545, offset 0, flags [none], proto UDP (17), length 78)
+    10.83.0.1.52774 > 10.83.0.3.4789: [bad udp cksum 0x14f5 -> 0x094f!] VXLAN, flags [I] (0x08), vni 101
+ARP, Ethernet (len 6), IPv4 (len 4), Request who-has 10.83.50.11 tell 10.83.50.10, length 28
+	0x0000:  1e94 e19e 8cb4 fa85 fd7a a355 0800 4500  .........z.U..E.
+	0x0010:  004e 63c9 0000 4011 022d 0a53 0001 0a53  .Nc...@..-.S...S
+	0x0020:  0003 ce26 12b5 003a 14f5 0800 0000 0000  ...&...:........
+	0x0030:  6500 ffff ffff ffff 0200 0065 000a 0806  e..........e....
+	0x0040:  0001 0800 0604 0001 0200 0065 000a 0a53  ...........e...S
+	0x0050:  320a 0000 0000 0000 0a53 320b            2........S2.
+
+1 packet captured
+1 packet received by filter
+0 packets dropped by kernel
+== hv1: vxlan101 after
+02:00:00:65:00:0b master br101 
+66:b7:bb:e7:11:67 vlan 1 master br101 permanent
+66:b7:bb:e7:11:67 master br101 permanent
+02:00:00:65:00:0b dst 10.83.0.2 self 
+00:00:00:00:00:00 dst 10.83.0.2 self permanent
+00:00:00:00:00:00 dst 10.83.0.3 self permanent
+== hv3: vxlan101 after
+02:00:00:65:00:0a master br101 
+76:3b:df:f2:76:58 vlan 1 master br101 permanent
+76:3b:df:f2:76:58 master br101 permanent
+02:00:00:65:00:0a dst 10.83.0.1 self 
+00:00:00:00:00:00 dst 10.83.0.1 self permanent
+00:00:00:00:00:00 dst 10.83.0.2 self permanent
