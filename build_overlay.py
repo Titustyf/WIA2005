@@ -201,7 +201,30 @@ def tenant_commands(spec, hv, tenant):
     hypervisor's underlay IP; vm_ports(spec, hv) tells you which port each VM is plugged into.
     """
     cmds = []
-    # TODO: your code here
+    p = plan(spec)
+    vni = int(tenant["vni"])
+    local = p["hypervisors"][hv]
+    ports = vm_ports(spec, hv)
+
+    cmds = [
+        f"ip link add br{vni} type bridge",   
+        f"ip link set br{vni} up",
+        f"ip link add vxlan{vni} type vxlan id {vni} local {local} dstport 4789 dev {hv}-eth0",
+        f"ip link set vxlan{vni} master br{vni}",
+        f"ip link set vxlan{vni} up",
+    ]
+
+    for vm, where in tenant["vms"]:
+        if where == hv:
+            cmds.append(f"ip link set {ports[vm]} master br{vni}")
+            cmds.append(f"ip link set {ports[vm]} up")
+
+    hosts = {where for _, where in tenant["vms"]}
+    for other in spec["hypervisors"]:
+        if other != hv and other in hosts:
+            cmds.append(
+                f"bridge fdb append 00:00:00:00:00:00 dev vxlan{vni} dst {p['hypervisors'][other]}"
+            )
     return cmds
 
 
