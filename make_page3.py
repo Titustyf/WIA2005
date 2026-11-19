@@ -206,10 +206,18 @@ PAGE = """<!doctype html>
   pre {{ background: #111827; color: #f3f4f6; padding: .8rem; border-radius: .4rem; overflow-x: auto; font-size: .82rem; }}
   #diagram svg {{ max-width: 100%; height: auto; border: 1px solid #e5e7eb; border-radius: .4rem; }}
   .meta, .file {{ color: #6b7280; font-size: .85rem; }} code {{ font-size: .88em; }}
+  .page-navigation {{ display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; margin-bottom: 1rem; }}
+  .page-navigation a:last-child {{ text-align: right; }}
+  @media (max-width: 520px) {{ .page-navigation {{ flex-wrap: wrap; }} }}
 </style>
 </head>
 <body>
-<p class="meta"><a href="../">← Week 2: my network, built from data</a></p>
+<div class="page-navigation">
+    <a href="../">← Week 2: my network, built from data</a>
+    <a href="https://titustyf.github.io/WIA2005/week6/">
+        Week 6: My data centre overlay, from data →
+    </a>
+</div>
 <h1>My routed network, from data</h1>
 <p class="meta">Student ID ending {last4} · generated from <code>{source}</code> by <code>make_page3.py</code> on {today}</p>
 <p id="summary">{n_routers} routers, {n_lans} LANs and {n_links} router links, with {n_routes} static routes, on <code>{v4_block}</code>.
